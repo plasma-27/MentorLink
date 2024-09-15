@@ -1,0 +1,116 @@
+User Endpoints
+User Signup
+
+Endpoint: POST /signup
+Description: Registers a new user (mentee or mentor).
+Input:
+name: User's name
+email: User's email (used as userId)
+password: User's password
+role: User's role ('mentor' or 'mentee')
+bio: Optional brief bio
+skills: Optional list of skills
+profilePicture: Optional URL to the profile picture
+mentorDetails: (If role is mentor) expertise and past domains
+Output: Confirmation message with user details (excluding password).
+User Login
+
+Endpoint: POST /login
+Description: Authenticates a user and provides a session token.
+Input:
+email: User's email (used as userId)
+password: User's password
+Output: Authentication token and user details.
+Get User Profile
+
+Endpoint: GET /profile/:id
+Description: Retrieves details of a specific user by their email.
+Input:
+id: User's email (used as userId)
+Output: User profile details, including role-specific fields (projects for mentees, expertise for mentors).
+Update User Profile
+
+Endpoint: PUT /profile/:id
+Description: Updates details of a specific user.
+Input:
+id: User's email (used as userId)
+name: (Optional) Updated name
+bio: (Optional) Updated bio
+skills: (Optional) Updated list of skills
+mentorDetails: (If role is mentor) updated expertise and past domains
+availability: (If role is mentor) updated availability status
+Output: Confirmation message with updated user details.
+Project Endpoints
+Create Project
+
+Endpoint: POST /projects
+Description: Creates a new project for a mentee.
+Input:
+title: Project title
+description: Project description
+mentees: List of mentee IDs
+Output: Confirmation message with project details.
+Get Project Details
+
+Endpoint: GET /projects/:projectId
+Description: Retrieves details of a specific project.
+Input:
+projectId: ID of the project
+Output: Project details including title, description, mentees, mentors, status, and creation date.
+Update Project
+
+Endpoint: PUT /projects/:projectId
+Description: Updates details of a specific project.
+Input:
+projectId: ID of the project
+title: (Optional) Updated title
+description: (Optional) Updated description
+status: (Optional) Updated status ('ongoing' or 'completed')
+mentors: (Optional) List of mentor IDs
+Output: Confirmation message with updated project details.
+Assign Mentor
+
+Endpoint: POST /projects/:projectId/assignMentor
+Description: Assigns a mentor to a specific project.
+Input:
+projectId: ID of the project
+mentorId: ID of the mentor to be assigned
+Output: Confirmation message indicating the mentor has been assigned.
+Session Endpoints
+Schedule Session
+
+Endpoint: POST /sessions
+Description: Schedules a mentorship session between a mentee and a mentor.
+Input:
+mentee: ID of the mentee
+mentor: ID of the mentor
+project: ID of the project
+mode: Mode of session ('chat' or 'video')
+scheduledAt: Date and time when the session is scheduled
+duration: Duration of the session in minutes
+Output: Confirmation message with session details.
+Get Sessions
+
+Endpoint: GET /sessions/:userId
+Description: Retrieves all sessions for a specific user (mentee or mentor).
+Input:
+userId: ID of the user
+Output: List of sessions where the user is either a mentee or mentor.
+Add Feedback
+
+Endpoint: POST /sessions/feedback
+Description: Allows a mentor to add feedback after a session.
+Input:
+sessionId: ID of the session
+feedback: Feedback text
+Output: Confirmation message with updated session details including feedback.
+Summary of Inputs and Outputs
+Inputs:
+
+Use data from forms, client requests, or user interactions.
+IDs can be obtained from user profiles, project listings, or session details.
+User authentication and role information are critical for endpoint access and validation.
+Outputs:
+
+JSON responses containing confirmation messages, detailed data, or error messages.
+Response data often includes the newly created or updated resource and any associated details.
