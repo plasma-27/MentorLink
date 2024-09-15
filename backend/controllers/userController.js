@@ -211,3 +211,72 @@ exports.updateMentorProfile = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
+
+exports.getAvailableMentorsByDomain = async (req, res) => {
+  try {
+    // 1. Get the list of domains from the request query
+    const domains = req.query.domains ? req.query.domains.split(',') : [];
+
+    if (domains.length === 0) {
+      return res.status(400).json({ msg: 'No domains provided' });
+    }
+
+    // 2. Find mentors who have expertise or past domains in the provided domains
+    const mentors = await User.aggregate([
+      {
+        $match: {
+          role: 'mentor',
+          $or: [
+            { 'mentorDetails.expertise': { $in: domains } },
+            { 'mentorDetails.pastDomains': { $in: domains } }
+          ]
+        }
+      },
+      {
+        $addFields: {
+          expertiseMatchCount: {
+            $size: {
+              $filter: {
+                input: '$mentorDetails.expertise',
+                as: 'domain',
+                cond: { $in: ['$$domain', domains] }
+              }
+            }
+          },
+          pastDomainsMatchCount: {
+            $size: {
+              $filter: {
+                input: '$mentorDetails.pastDomains',
+                as: 'domain',
+                cond: { $in: ['$$domain', domains] }
+              }
+            }
+          }
+        }
+      },
+      {
+        $sort: {
+          expertiseMatchCount: -1, // Sort by expertise match count first
+          pastDomainsMatchCount: -1 // Then sort by past domains match count
+        }
+      },
+      {
+        $project: {
+          name: 1,
+          email: 1,
+          bio: 1,
+          skills: 1,
+          mentorDetails: 1,
+          expertiseMatchCount: 1,
+          pastDomainsMatchCount: 1
+        }
+      }
+    ]);
+
+    // 3. Return the list of available mentors
+    res.status(200).json(mentors);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+};
