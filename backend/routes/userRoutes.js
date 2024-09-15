@@ -1,10 +1,15 @@
 
-
 const express = require('express');
 const router = express.Router();
-const { updateProfile, getUserProfile } = require('../controllers/userController');
+const { updateMenteeProfile, updateMentorProfile, getUserProfile } = require('../controllers/userController');
 
-router.put('/profile/:id', updateProfile); // Update user profile (mentee or mentor)
-router.get('/profile/:id', getUserProfile); // Get profile details
+// Mentee routes
+router.put('/profile/mentee/:id', updateMenteeProfile); // Update mentee profile
+
+// Mentor routes
+router.put('/profile/mentor/:id', updateMentorProfile); // Update mentor profile
+
+// Common route for getting user profile (mentee or mentor)
+router.get('/profile/:id', getUserProfile); // Get user profile by email (id)
 
 module.exports = router;

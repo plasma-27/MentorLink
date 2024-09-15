@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const { validationResult } = require('express-validator');
+
 
 // Update user profile
 exports.updateProfile = async (req, res) => {
@@ -103,6 +105,107 @@ exports.getUserProfile = async (req, res) => {
     } else {
       return res.status(400).json({ msg: 'Invalid user role' });
     }
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+};
+
+
+
+exports.updateMenteeProfile = async (req, res) => {
+  try {
+    // Validate the request body
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    // Extract the userId (email) from the request parameters
+    const userId = req.params.id;
+
+    // Find the user by email
+    let user = await User.findOne({ email: userId, role: 'mentee' });
+    if (!user) {
+      return res.status(404).json({ msg: 'Mentee not found' });
+    }
+
+    // Update fields for the mentee
+    const { name, bio, skills, education } = req.body;
+    
+    if (name) user.name = name;
+    if (bio) user.bio = bio;
+    if (skills) user.skills = skills;
+    if (education) user.education = education;
+
+    // Save the updated mentee profile to the database
+    await user.save();
+
+    // Return the updated mentee profile
+    res.status(200).json({
+      msg: 'Mentee profile updated successfully',
+      user: {
+        userId: user.email,
+        name: user.name,
+        email: user.email,
+        bio: user.bio,
+        skills: user.skills,
+        education: user.education,
+      },
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+};
+
+exports.updateMentorProfile = async (req, res) => {
+  try {
+    // Validate the request body
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    // Extract the userId (email) from the request parameters
+    const userId = req.params.id;
+
+    // Find the user by email and ensure they are a mentor
+    let user = await User.findOne({ email: userId, role: 'mentor' });
+    if (!user) {
+      return res.status(404).json({ msg: 'Mentor not found' });
+    }
+
+    // Update fields for the mentor
+    const { name, bio, skills, mentorDetails, availability, education } = req.body;
+    
+    if (name) user.name = name;
+    if (bio) user.bio = bio;
+    if (skills) user.skills = skills;
+    if (mentorDetails) {
+      if (mentorDetails.expertise) user.mentorDetails.expertise = mentorDetails.expertise;
+      if (mentorDetails.pastDomains) user.mentorDetails.pastDomains = mentorDetails.pastDomains;
+    }
+    if (availability !== undefined) user.availability = availability;
+    if (education) user.education = education;
+
+    // Save the updated mentor profile to the database
+    await user.save();
+
+    // Return the updated mentor profile
+    res.status(200).json({
+      msg: 'Mentor profile updated successfully',
+      user: {
+        userId: user.email,
+        name: user.name,
+        email: user.email,
+        bio: user.bio,
+        skills: user.skills,
+        mentorDetails: user.mentorDetails,
+        availability: user.availability,
+        education: user.education,
+      },
+    });
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server error');
