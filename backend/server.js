@@ -1,8 +1,7 @@
-
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
 
 // Import the routes
 const authRoutes = require('./routes/authRoutes');
@@ -13,13 +12,10 @@ const sessionRoutes = require('./routes/sessionRoutes');
 
 const app = express();
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/mentorlink', {
-}).then(() => {
-    console.log('Connected to MongoDB');
-}).catch(err => {
-    console.error('Error connecting to MongoDB:', err);
-});
+
+//Connection to Database
+const connectToMongoDB = require('./dbConnection'); // Path to your MongoDB connection file
+connectToMongoDB();
 
 
 app.use(bodyParser.json());
