@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 // Import the routes
 const authRoutes = require('./routes/authRoutes');
@@ -12,6 +13,7 @@ const sessionRoutes = require('./routes/sessionRoutes');
 
 const app = express();
 
+app.use(cors());
 
 //Connection to Database
 const connectToMongoDB = require('./dbConnection'); // Path to your MongoDB connection file
